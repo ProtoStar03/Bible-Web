@@ -1,4 +1,4 @@
-# Bible_Today (Faithful Moments)
+# Faithful Moments
 
 성경 말씀을 하루에 한 구절씩 묵상하고, 즐겨찾기와 노트를 남길 수 있는 Vanilla JS 싱글 페이지 웹앱입니다.
 
@@ -32,3 +32,4 @@ Bible_Today/
 │  ├─ exportImport.js
 │  └─ utils.js
 └─ README.md
+
