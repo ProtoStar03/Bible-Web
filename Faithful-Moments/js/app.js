@@ -43,7 +43,7 @@ async function init() {
   document.documentElement.setAttribute("data-theme", st.theme);
 
   // 2) 구절 로드 (로컬 JSON → 실패하면 fallback)
-  await loadVerses("/data/verses_sample.json");
+  await loadVerses("/data/verses.sample.json");
   const verses = getAllVerses();
 
   // 3) 오늘의 말씀 선택
