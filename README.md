@@ -15,7 +15,7 @@
 
 ## 폴더 구조
 ```text
-Bible_Today/
+Faithful-Moments/
 ├─ index.html
 ├─ /assets
 ├─ /css
