@@ -14,7 +14,8 @@ import {
   getAllVerses,
   searchVerses,
   findByRef,
-  fetchOnlineVerse
+  fetchOnlineVerse,
+  loadVerseByLanguage
 } from "./verses.js";
 import {
   renderVerse,
@@ -51,9 +52,11 @@ async function init() {
   // 1) 테마 적용 (state에 저장돼 있던 걸 DOM에 반영)
   const st = getState();
   document.documentElement.setAttribute("data-theme", st.theme);
+  // 언어 드롭다운을 state에 맞게 설정
+  $("#lang-select").value = getLanguage();
 
   // 2) 구절 로드 (로컬 JSON → 실패하면 fallback)
-  await loadVerses("/data/verses.sample.json");
+  await loadVerses("/data/verses_sample.json");
   const verses = getAllVerses();
 
   // 3) 오늘의 말씀 선택
@@ -73,18 +76,25 @@ async function init() {
 
 function bindEvents() {
   // 검색
-  const searchInput = $("#search-input").addEventListener(
+  // 검색
+  const searchInput = $("#search-input");
+  searchInput.addEventListener(
     "input",
     debounce(async (e) => {
       const q = e.target.value;
       const lang = getLanguage();
 
       if (lang === "kor") {
+        // 한국어: 로컬에서 검색
         currentResults = searchVerses(q);
       } else {
-        // 영어 → API fetch
-        const online = await fetchOnlineVerse(q);
-        currentResults = online ? [online] : [];
+        // 영어: bible-api.com에서 한 구절 가져오기
+        if (!q.trim()) {
+          currentResults = [];
+        } else {
+          const online = await fetchOnlineVerse(q);
+          currentResults = online ? [online] : [];
+        }
       }
 
       currentIndex = 0;
@@ -92,17 +102,8 @@ function bindEvents() {
       renderInfo(currentResults.length);
     }, 150)
   );
-  searchInput.addEventListener(
-    "input",
-    debounce((e) => {
-      const q = e.target.value;
-      const found = searchVerses(q);
-      currentResults = found;
-      currentIndex = 0;
-      renderVerse(currentResults[0], 0, currentResults.length);
-      renderInfo(currentResults.length);
-    }, 150)
-  );
+
+
 
   // 오늘의 말씀
   $("#today-btn").addEventListener("click", async () => {

@@ -48,7 +48,7 @@ export async function loadVerseByLanguage(refLike) {
   }
 }
 
-export async function loadVerses(url = "/data/verses.sample.json") {
+export async function loadVerses(url = "/data/verses_sample.json") {
   try {
     const res = await fetch(url);
     if (!res.ok) {
@@ -71,11 +71,12 @@ export function getAllVerses() {
 export function searchVerses(query) {
   if (!query.trim()) return verses;
   const q = query.trim().toLowerCase();
-  return verses.filter(v =>
-    v.text.toLowerCase().includes(q) ||
-    v.ref.toLowerCase().includes(q) ||
-    v.book.toLowerCase().includes(q)
-  );
+  return verses.filter(v => {
+    const text = (v.text || "").toLowerCase();
+    const ref  = (v.ref  || "").toLowerCase();
+    const book = (v.book || "").toLowerCase();
+    return text.includes(q) || ref.includes(q) || book.includes(q);
+  });
 }
 
 export function findByRef(ref) {
