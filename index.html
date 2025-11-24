@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <title>Faithful Moments - 성경 묵상</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="성경 말씀을 검색하고 묵상 노트를 남길 수 있는 웹앱" />
+  <link rel="stylesheet" href="./css/tokens.css" />
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+<header class="topbar">
+  <h1 class="brand">Faithful Moments</h1>
+  <div class="top-actions">
+    <button id="theme-toggle" class="btn secondary">🌙 다크</button>
+    <button id="open-meditation" class="btn primary">🧘 묵상 모드</button>
+  </div>
+</header>
+
+<main class="container">
+  <section class="controls">
+    <div class="controls-left">
+      <input id="search-input" class="input" placeholder="검색: 키워드, 책 이름, 예) 시편 23:1" />
+      <button id="today-btn" class="btn secondary">오늘의 말씀</button>
+      <button id="random-btn" class="btn">랜덤</button>
+    </div>
+    <div class="controls-right">
+      <input id="goto-input" class="input" placeholder="바로가기: 시편 23:1" />
+      <button id="goto-btn" class="btn secondary">이동</button>
+    </div>
+  </section>
+
+  <p id="result-info" class="result-info">구절을 불러오는 중...</p>
+
+  <section id="verse-card" class="verse-card">
+    <div class="verse-head">
+      <div class="verse-meta">VERSE</div>
+      <h2 id="verse-ref" class="verse-ref">—</h2>
+    </div>
+    <p id="verse-text" class="verse-text">구절을 불러오는 중...</p>
+
+    <div class="verse-actions">
+      <button id="fav-btn" class="btn secondary">☆ 즐겨찾기</button>
+      <button id="share-btn" class="btn secondary">공유</button>
+      <button id="download-btn" class="btn secondary">이미지 저장</button>
+    </div>
+
+    <div class="note-wrap">
+      <label for="note-input">나의 묵상 노트</label>
+      <textarea id="note-input" class="textarea" rows="4" placeholder="본문에서 느낀 점/기도제목을 적어보세요."></textarea>
+    </div>
+
+    <div class="pager">
+      <button id="prev-btn" class="btn secondary">이전</button>
+      <span id="pager-info" class="pager-info">0 / 0</span>
+      <button id="next-btn" class="btn secondary">다음</button>
+    </div>
+  </section>
+
+  <section class="panel-grid">
+    <div class="panel">
+      <h3>⭐ 즐겨찾기</h3>
+      <ul id="fav-list" class="fav-list"></ul>
+      <p id="fav-empty" class="muted">아직 즐겨찾기가 없어요.</p>
+    </div>
+    <div class="panel">
+      <h3>📦 데이터</h3>
+      <div class="btn-row">
+        <button id="export-btn" class="btn secondary">Export</button>
+        <button id="import-btn" class="btn secondary">Import</button>
+      </div>
+      <p class="muted text-sm">즐겨찾기와 노트만 내보내고/가져옵니다.</p>
+    </div>
+  </section>
+</main>
+
+<!-- 묵상 모달 -->
+<div id="meditation-modal" class="modal hidden">
+  <div class="modal-body">
+    <div class="modal-header">
+      <h4>묵상 모드</h4>
+      <button id="close-meditation" class="btn secondary">닫기</button>
+    </div>
+    <div class="modal-content">
+      <p id="med-ref" class="modal-ref"></p>
+      <p id="med-text" class="modal-text"></p>
+      <p class="muted" id="timer-text">남은 시간: 5:00</p>
+      <div class="btn-row center">
+        <button data-t="300" class="btn secondary timer-btn">5분</button>
+        <button data-t="600" class="btn secondary timer-btn">10분</button>
+        <button data-t="0" class="btn secondary timer-btn">일시정지</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="./js/app.js" type="module"></script>
+</body>
+</html>
