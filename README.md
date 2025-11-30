@@ -10,7 +10,7 @@
 
 ---
 
-<img width="1116" height="913" alt="image" src="https://github.com/user-attachments/assets/315648bc-0f55-41c2-b23a-d21f70beeae3" />
+<img width="1151" height="904" alt="image" src="https://github.com/user-attachments/assets/674d04e5-26e4-4887-aa7e-d5b7fd8167fa" />
 
 
 ## ✨ 주요 기능 요약
