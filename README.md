@@ -10,6 +10,9 @@
 
 ---
 
+<img width="1116" height="913" alt="image" src="https://github.com/user-attachments/assets/315648bc-0f55-41c2-b23a-d21f70beeae3" />
+
+
 ## ✨ 주요 기능 요약
 
 ### 1. **성경 구절 랜덤 / 오늘의 말씀 제공**
