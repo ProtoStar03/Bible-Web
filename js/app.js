@@ -6,7 +6,9 @@ import {
   setNote,
   addFavorite,
   removeFavorite,
-  isFavorite
+  isFavorite,
+  logHistory,
+  getHistory
 } from "./state.js";
 import {
   loadVerses,
@@ -18,7 +20,8 @@ import {
   renderVerse,
   renderInfo,
   renderFavorites,
-  renderTimer
+  renderTimer,
+  renderHistory
 } from "./ui.js";
 import {
   shareVerse,
@@ -46,12 +49,62 @@ async function init() {
   currentResults = verses;
   currentIndex   = todayIndex;
 
-  renderVerse(currentResults[currentIndex], currentIndex, currentResults.length);
-  renderInfo(currentResults.length);
+  updateView();
   renderFavorites();
   renderTimer(timerSec);
+  updateHistoryPanel();
 
   bindEvents();
+}
+
+// 공통 렌더 + 히스토리 기록
+function updateView() {
+  const verse = currentResults[currentIndex];
+  renderVerse(verse, currentIndex, currentResults.length);
+  renderInfo(currentResults.length);
+  if (verse) {
+    logHistory(verse.ref);
+    updateHistoryPanel();
+  }
+}
+
+// 히스토리 통계 계산 + 패널 렌더
+function updateHistoryPanel() {
+  const history = getHistory();
+  if (!history.length) {
+    renderHistory({ total: 0 });
+    return;
+  }
+
+  const now = new Date();
+  const sevenAgo = new Date();
+  sevenAgo.setDate(now.getDate() - 6);
+
+  let last7 = 0;
+  const counts = {}; // ref -> count
+
+  history.forEach(item => {
+    const d = new Date(item.ts);
+    if (d >= sevenAgo) last7++;
+    counts[item.ref] = (counts[item.ref] || 0) + 1;
+  });
+
+  const total = history.length;
+  const last = history[history.length - 1];
+  const lastDate = new Date(last.ts);
+  const lastDateText = `${lastDate.getFullYear()}-${String(lastDate.getMonth()+1).padStart(2,"0")}-${String(lastDate.getDate()).padStart(2,"0")}`;
+
+  const topArr = Object.entries(counts)
+    .map(([ref, count]) => ({ ref, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 3);
+
+  renderHistory({
+    total,
+    last7,
+    lastDateText,
+    topVerses: topArr
+  });
 }
 
 function bindEvents() {
@@ -63,8 +116,7 @@ function bindEvents() {
       const q = e.target.value;
       currentResults = searchVerses(q);
       currentIndex   = 0;
-      renderVerse(currentResults[0], 0, currentResults.length);
-      renderInfo(currentResults.length);
+      updateView();
     }, 150)
   );
 
@@ -74,16 +126,14 @@ function bindEvents() {
     const idx    = todaySeed(verses.length);
     currentResults = verses;
     currentIndex   = idx;
-    renderVerse(currentResults[currentIndex], currentIndex, currentResults.length);
-    renderInfo(currentResults.length);
+    updateView();
   });
 
   // 랜덤
   $("#random-btn").addEventListener("click", () => {
     if (!currentResults.length) return;
     currentIndex = Math.floor(Math.random() * currentResults.length);
-    renderVerse(currentResults[currentIndex], currentIndex, currentResults.length);
-    renderInfo(currentResults.length);
+    updateView();
   });
 
   // 바로가기
@@ -97,23 +147,20 @@ function bindEvents() {
     }
     currentResults = getAllVerses();
     currentIndex   = currentResults.findIndex(v => v.ref === verse.ref);
-    renderVerse(currentResults[currentIndex], currentIndex, currentResults.length);
-    renderInfo(currentResults.length);
+    updateView();
   });
 
   // 이전/다음
   $("#prev-btn").addEventListener("click", () => {
     if (!currentResults.length) return;
     currentIndex = (currentIndex - 1 + currentResults.length) % currentResults.length;
-    renderVerse(currentResults[currentIndex], currentIndex, currentResults.length);
-    renderInfo(currentResults.length);
+    updateView();
   });
 
   $("#next-btn").addEventListener("click", () => {
     if (!currentResults.length) return;
     currentIndex = (currentIndex + 1) % currentResults.length;
-    renderVerse(currentResults[currentIndex], currentIndex, currentResults.length);
-    renderInfo(currentResults.length);
+    updateView();
   });
 
   // 즐겨찾기 토글
@@ -125,9 +172,8 @@ function bindEvents() {
     } else {
       addFavorite(verse.ref);
     }
-    renderVerse(verse, currentIndex, currentResults.length);
+    updateView();
     renderFavorites();
-    renderInfo(currentResults.length);
   });
 
   // 노트 자동 저장
@@ -189,7 +235,7 @@ function bindEvents() {
         localStorage.setItem("fm_notes", JSON.stringify(st.notes));
       }
       renderFavorites();
-      renderInfo(currentResults.length);
+      updateView();
     });
   });
 
@@ -200,16 +246,14 @@ function bindEvents() {
     if (!verse) return;
     currentResults = getAllVerses();
     currentIndex   = currentResults.findIndex(v => v.ref === ref);
-    renderVerse(currentResults[currentIndex], currentIndex, currentResults.length);
-    renderInfo(currentResults.length);
+    updateView();
   });
 
   window.addEventListener("fm:remove-fav", (e) => {
     const { ref } = e.detail;
     removeFavorite(ref);
     renderFavorites();
-    renderInfo(currentResults.length);
-    renderVerse(currentResults[currentIndex], currentIndex, currentResults.length);
+    updateView();
   });
 }
 

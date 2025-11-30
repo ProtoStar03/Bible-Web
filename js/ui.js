@@ -78,3 +78,25 @@ export function renderFavorites() {
 export function renderTimer(sec) {
   $("#timer-text").textContent = `남은 시간: ${formatTime(sec)}`;
 }
+
+// 🔹 새로 추가: 히스토리 패널 렌더링
+export function renderHistory(stats) {
+  const summaryEl = $("#history-summary");
+  const listEl    = $("#history-top");
+
+  if (!stats || stats.total === 0) {
+    summaryEl.textContent = "아직 묵상 기록이 없어요. 오늘의 말씀 버튼을 눌러보세요.";
+    listEl.innerHTML = "";
+    return;
+  }
+
+  summaryEl.textContent =
+    `전체 ${stats.total}회 묵상, 최근 7일 동안 ${stats.last7}회, 마지막 묵상일: ${stats.lastDateText}`;
+
+  listEl.innerHTML = "";
+  stats.topVerses.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = `${item.ref} – ${item.count}회`;
+    listEl.appendChild(li);
+  });
+}
